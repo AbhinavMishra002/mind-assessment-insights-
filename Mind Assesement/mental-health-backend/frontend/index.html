@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Student Portal</title>
+
+    <style>
+        :root {
+            --bg: #000000;
+            --panel: #0f0f10;
+            --muted: #9aa0a6;
+            --accent: #9ca3a8;
+            --accent2: #6f7478;
+            --glass: rgba(255, 255, 255, 0.03);
+            --white: #e6eef8;
+            --danger: #b84f4f;
+            --radius: 6px;
+            --pad: 16px;
+            --shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: var(--bg);
+            color: var(--white);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app {
+            max-width: 1100px;
+            margin: 28px auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 6px;
+            background: linear-gradient(180deg, var(--accent), var(--accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #060606;
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            font-size: 20px;
+            margin: 0;
+            letter-spacing: 0.4px;
+        }
+
+        p.lead {
+            color: var(--muted);
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.005));
+            border-radius: var(--radius);
+            padding: var(--pad);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 18px;
+        }
+
+        .panel {
+            position: sticky;
+            top: 24px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .nav button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            padding: 12px;
+            border-radius: 6px;
+            color: var(--white);
+            text-align: left;
+            cursor: pointer;
+            transition: transform .12s ease, background .12s ease;
+        }
+
+        .nav button:hover {
+            transform: translateY(-3px);
+        }
+
+        .nav button.active {
+            background: rgba(156, 163, 168, 0.06);
+            border: 1px solid rgba(156, 163, 168, 0.08);
+        }
+
+        .login .field {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-size: 13px;
+            margin-bottom: 6px;
+            color: var(--muted);
+        }
+
+        input[type=text],
+        input[type=password] {
+            background: var(--panel);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            padding: 10px;
+            border-radius: 6px;
+            color: var(--white);
+            outline: none;
+            transition: box-shadow .12s ease, transform .08s ease;
+        }
+
+        input[type=text]:focus,
+        input[type=password]:focus {
+            box-shadow: 0 6px 18px rgba(156, 163, 168, 0.04);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: none;
+            color: #060606;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            transition: transform .12s ease, opacity .12s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .btn.ghost {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            color: var(--white);
+        }
+
+        .btn.small {
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+
+        main {
+            min-height: 420px;
+        }
+
+        .main-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .resource {
+            background: var(--panel);
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            width: 220px;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.01);
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.01);
+            cursor: pointer;
+            transition: transform .09s ease, box-shadow .09s ease;
+        }
+
+        .option:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
+        }
+
+        .option.selected {
+            outline: 3px solid rgba(156, 163, 168, 0.08);
+            background: linear-gradient(90deg, rgba(156, 163, 168, 0.02), rgba(111, 116, 120, 0.01));
+        }
+
+        .chip {
+            padding: 6px 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.02);
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        .badge.white {
+            background: rgba(255, 255, 255, 0.01);
+            color: var(--white);
+        }
+
+        /* healthy = green */
+        .badge.green {
+            background: linear-gradient(90deg, #a7f3d0, #86efac);
+            color: #06281b;
+        }
+
+        .badge.yellow {
+            background: linear-gradient(90deg, #cfc9c1, #e6e1da);
+            color: #222;
+        }
+
+        .badge.red {
+            background: linear-gradient(90deg, var(--danger), #d98b8b);
+            color: #100;
+        }
+
+        footer {
+            margin-top: 22px;
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .suggestion-card ul {
+            margin: 8px 0 0 18px;
+            color: var(--muted);
+        }
+
+        .suggestion-card h4 {
+            margin: 0 0 6px 0;
+        }
+
+        @media (max-width:900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .panel {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <header>
+            <div class="brand">
+                <div class="logo">ST</div>
+                <div>
+                    <h1>Student Portal</h1>
+                    <p class="lead">Mental health check — private & focused</p>
+                </div>
+            </div>
+            <div>
+                <small style="color:var(--muted)">Take care. Keep checking in.</small>
+            </div>
+        </header>
+
+        <div class="grid">
+            <aside class="panel">
+                <div class="card login" id="authCard">
+                    <div id="authInner"></div>
+                </div>
+
+                <div style="height:12px"></div>
+
+                <div class="card nav">
+                    <button id="navHome" class="active">Home</button>
+                    <button id="navQuestion">Questionnaire</button>
+                    <button id="navQuestionsList">Questions (Preview)</button>
+                    <button id="navResources">Resources</button>
+                    <button id="navAdmin">Admin</button>
+                    <button id="logoutBtn" class="ghost" style="display:none">Logout</button>
+                </div>
+            </aside>
+
+            <main>
+                <div id="contentArea"></div>
+            </main>
+        </div>
+
+        <footer>Keep this page private to protect user data.</footer>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:3000';
+
+        // ---------------- DATA ----------------
+        const SUGGESTIONS = {
+            low: [
+                "Talk to one trusted friend or family member about how you’re feeling — sharing helps.",
+                "Try small sleep and routine steps: sleep 7–8 hours, avoid late-night screens.",
+                "Take short walks or do light exercise for 20 minutes daily to reduce stress.",
+                "Limit caffeine and sugary drinks in the evening; hydrate and eat balanced meals.",
+                "Write down one small goal each day — focus on simple, achievable tasks.",
+                "If feelings persist, contact the college counsellor or a mental health professional."
+            ],
+            medium: [
+                "Keep a regular routine and add short relaxation breaks between study sessions.",
+                "Start a simple breathing exercise (5 minutes) every day to calm the mind.",
+                "Track one positive thing per day in a short journal to build resilience.",
+                "Try brief physical activity (walk, stretch) three times a week.",
+                "Talk about small stressors with a friend and plan one corrective step.",
+                "If you notice worsening symptoms, schedule time with a counsellor."
+            ],
+            good: [
+                "Keep doing what works: consistent sleep, regular breaks, and balanced meals.",
+                "Maintain light exercise and short mindfulness practice to stay steady.",
+                "Share tips with peers — helping others also keeps you balanced.",
+                "Set new small goals to grow (study habit, new hobby) without pressure.",
+                "Keep tracking habits (sleep, exercise) so small issues don’t grow.",
+                "If you ever feel changes, don’t ignore them — speak up early."
+            ]
+        };
+
+        const QUESTIONS = [
+            { id: 1, text: "Over the past two weeks, how often have you felt little interest or pleasure in doing things?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 2, text: "How often have you felt down, depressed, or hopeless?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 3, text: "How often have you felt nervous, anxious or on edge?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 4, text: "How often have you had trouble falling asleep, staying asleep, or sleeping too much?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 5, text: "How often have you had trouble concentrating on tasks (reading, watching, studying)?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 6, text: "How often have you felt tired or had little energy?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 7, text: "How often have you felt hopeless about the future?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 8, text: "How often have you felt shaky, trembling, or had heart racing without physical cause?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 9, text: "How often have you felt irritable or easily annoyed?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 10, text: "How often have you avoided social situations because of anxiety or fear?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 11, text: "How often have you found yourself worrying excessively about different things?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 12, text: "How often have you experienced sudden panic or intense fear?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 13, text: "How often have you noticed changes in appetite (eating much more or much less)?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 14, text: "How often have you felt worthless or excessively guilty?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 15, text: "How often have you had trouble managing daily tasks (work, study, home duties)?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 16, text: "How often have you felt restless or felt the need to keep moving?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 17, text: "How often have you felt detached from people or things around you?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 18, text: "How often have you had intrusive or unwanted thoughts you couldn't control?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 19, text: "How often have you felt that life is not worth living or had thoughts of harming yourself?", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"], scores: [0, 1, 2, 3] },
+            { id: 20, text: "How often have you felt able to cope with daily stress and problems?", options: ["Nearly every day", "More than half the days", "Several days", "Not at all"], scores: [0, 1, 2, 3] } // reverse-scored already
+        ];
+
+        // compute max score once
+        const MAX_SCORE = QUESTIONS.reduce((s, q) => s + Math.max(...(q.scores || [0])), 0);
+
+        // demo users for offline testing
+        const DEMO_USERS = [
+            { id: 'u_abhinav', name: 'Abhinav', role: 'student', username: 'abhinav', password: 'abhinav123' },
+            { id: 'u_astitva', name: 'Astitva', role: 'student', username: 'astitva', password: 'astitva123' },
+            { id: 'u_harsh', name: 'Harsh', role: 'student', username: 'harsh', password: 'harsh123' },
+            { id: 'u_admin', name: 'Administrator', role: 'admin', username: 'admin', password: 'admin123' }
+        ];
+
+        // ---------------- Storage helpers ----------------
+        function getLocalSubmissions() {
+            const raw = localStorage.getItem('mh_submissions');
+            return raw ? JSON.parse(raw) : [];
+        }
+        function saveLocalSubmission(rec) {
+            const all = getLocalSubmissions();
+            const idx = all.findIndex(r => r.userId === rec.userId);
+            if (idx > -1) all[idx] = rec; else all.push(rec);
+            localStorage.setItem('mh_submissions', JSON.stringify(all));
+        }
+
+        // ---------------- Auth helpers ----------------
+        function setToken(token) { localStorage.setItem('mh_token', token); }
+        function getToken() { return localStorage.getItem('mh_token'); }
+        function setUser(user) { localStorage.setItem('mh_user', JSON.stringify(user)); }
+        function getUser() { const r = localStorage.getItem('mh_user'); return r ? JSON.parse(r) : null; }
+        function clearAuth() { localStorage.removeItem('mh_token'); localStorage.removeItem('mh_user'); }
+
+        // ---------------- App state ----------------
+        let appState = { user: getUser() };
+
+        // ---------------- Auth UI ----------------
+        function renderAuth() {
+            const el = document.getElementById('authInner');
+            if (appState.user) {
+                const initials = appState.user.name.split(' ').map(s => s[0]).slice(0, 2).join('');
+                el.innerHTML = `<div style="display:flex;align-items:center;gap:12px">
+          <div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(180deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#060606;font-weight:800">${initials}</div>
+          <div><div style="font-weight:700">${appState.user.name}</div><small style="color:var(--muted)">${appState.user.role}</small></div>
+        </div>`;
+                document.getElementById('logoutBtn').style.display = 'block';
+            } else {
+                el.innerHTML = `
+          <div style="font-weight:700;margin-bottom:8px">Sign in</div>
+          <div class="field"><label>Username</label><input id="uuser" type="text" autocomplete="username" /></div>
+          <div class="field"><label>Password</label><input id="upass" type="password" autocomplete="current-password" /></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn" id="loginBtn">Sign in</button><button class="btn ghost" id="signupBtn">Sign up</button>
+            <button class="btn ghost" id="demoBtn">Demo</button>
+          </div>
+        `;
+                document.getElementById('logoutBtn').style.display = 'none';
+                setTimeout(() => {
+                    document.getElementById('loginBtn').addEventListener('click', doLogin);
+                    document.getElementById('demoBtn').addEventListener('click', useDemo);
+                }, 10);
+            }
+        }
+
+        async function doLogin() {
+            const u = document.getElementById('uuser').value.trim();
+            const p = document.getElementById('upass').value.trim();
+            if (!u || !p) return alert('Enter username and password');
+
+            try {
+                const res = await fetch(API_BASE + '/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+                const j = await res.json();
+                if (!res.ok) { alert(j.error || j.message || 'Login failed'); return; }
+                if (j.success && j.token && j.user) {
+                    setToken(j.token);
+                    setUser(j.user);
+                    appState.user = j.user;
+                    renderAll();
+                } else {
+                    alert('Unexpected login response from server');
+                }
+            } catch (e) {
+                console.warn('Login failed (server unreachable?). Falling back to demo check.', e);
+                const found = DEMO_USERS.find(x => x.username === u && x.password === p);
+                if (found) { appState.user = found; setUser(found); renderAll(); }
+                else alert('Login failed. For offline testing use demo credentials.');
+            }
+        }
+
+        function useDemo() {
+            appState.user = DEMO_USERS[0];
+            setUser(appState.user);
+            renderAll();
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => { clearAuth(); appState.user = null; renderAll(); });
+
+        // ---------------- Navigation ----------------
+        const navMap = { navHome: renderHome, navQuestion: renderQuestionEntry, navQuestionsList: renderQuestionList, navResources: renderResources, navAdmin: renderAdmin };
+        Object.keys(navMap).forEach(id => document.getElementById(id).addEventListener('click', () => { setActiveNav(id); navMap[id](); }));
+        function setActiveNav(id) { document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+
+        // ---------------- Pages ----------------
+        function renderAll() { renderAuth(); renderHome(); }
+
+        function renderHome() {
+            setActiveNav('navHome');
+            const c = document.getElementById('contentArea');
+            const user = appState.user;
+            let html = `<div class="card main-head"><div style="flex:1"><h2>Welcome ${user ? user.name.split(' ')[0] : 'Guest'}</h2><p class="lead">${user ? 'Signed in — ready' : 'Sign in to save results to server'}</p></div>`;
+            if (user) {
+                const local = getLocalSubmissions();
+                const mine = local.find(s => s.userId === user.id);
+                html += `<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;justify-content:center"><div class="chip">Role: ${user.role}</div>`;
+                if (user.role === 'student') html += `<button class="btn" onclick="renderQuestionEntry()">${mine ? 'View / Retake' : 'Take questionnaire'}</button>`; else html += `<button class="btn" onclick="renderAdmin()">Admin</button>`;
+                html += `</div>`;
+            } else {
+                html += `<div style="display:flex;gap:8px;align-items:center"><button class="btn" onclick="document.getElementById('uuser').focus()">Sign in</button></div>`;
+            }
+            html += `</div>`;
+
+            html += `<div style="height:14px"></div><div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">Quick actions</h3><small style="color:var(--muted)">Use the nav to access features</small></div><div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+        <div class="resource"><strong>Breathing</strong><br><small style="color:var(--muted)">Short calming practice</small></div>
+        <div class="resource"><strong>Sleep tips</strong><br><small style="color:var(--muted)">Improve sleep routine</small></div>
+        <div class="resource"><strong>Mindfulness</strong><br><small style="color:var(--muted)">Simple beginning guide</small></div>
+      </div></div>`;
+
+            c.innerHTML = html;
+        }
+
+        function renderQuestionList() {
+            setActiveNav('navQuestionsList');
+            const c = document.getElementById('contentArea');
+            const html = `<div class="card"><h3>Questions (Preview)</h3><p class="lead" style="color:var(--muted)">Preview the items you'll answer.</p><div style="height:12px"></div>${QUESTIONS.map(q => `<div style="margin-bottom:12px"><div style="font-weight:700">Q${q.id}. ${q.text}</div><div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">${q.options.map((o, oi) => `<div class="chip">${String.fromCharCode(65 + oi)}. ${o}</div>`).join('')}</div></div>`).join('')}</div>`;
+            c.innerHTML = html;
+        }
+
+        // map zone key to css badge class
+        function zoneClass(zone) { if (zone === 'green') return 'green'; if (zone === 'yellow') return 'yellow'; return 'red'; }
+
+        function renderSVGGauge(score) {
+            // score is higher when symptoms are worse. For the visual meter we want higher
+            // to indicate better health, so compute a health percentage by inverting the
+            // symptom percentage.
+            const symptomPct = (MAX_SCORE === 0) ? 0 : Math.round((score / MAX_SCORE) * 100);
+            const healthPct = 100 - symptomPct; // higher => healthier
+            const pct = Math.round(healthPct);
+            const angle = -90 + (pct / 100) * 180;
+
+            // choose colors based on healthPct
+            let startColor = '#d1fae5'; // default soft green
+            let midColor = '#a7f3d0';
+            if (pct < 40) { // poor health => red
+                startColor = '#ffd6d6'; midColor = 'var(--danger)';
+            } else if (pct < 70) { // moderate => yellow/orange
+                startColor = '#fff7dd'; midColor = '#ffe58a';
+            } else { // healthy => green
+                startColor = '#e6fff4'; midColor = '#86efac';
+            }
+            return `
+        <svg viewBox="0 0 200 100" width="170" height="90">
+          <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0%" stop-color="${startColor}"/><stop offset="50%" stop-color="${midColor}"/><stop offset="100%" stop-color="${midColor}"/></linearGradient></defs>
+          <path d="M10 90 A80 80 0 0 1 190 90" stroke="rgba(255,255,255,0.06)" stroke-width="18" fill="none" stroke-linecap="round"/>
+          <path d="M10 90 A80 80 0 0 1 ${10 + (180 * (pct / 100))} 90" stroke="url(#g1)" stroke-width="18" fill="none" stroke-linecap="round"/>
+          <g transform="translate(100,90)"><line x1="0" y1="0" x2="${Math.cos(angle * Math.PI / 180) * 70}" y2="${Math.sin(angle * Math.PI / 180) * 70}" stroke="#fff" stroke-width="3" stroke-linecap="round" /></g>
+        </svg>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px">${pct}% healthy</div>
+      `;
+        }
+
+        // Start questionnaire interactive
+        function renderQuestionEntry() {
+            setActiveNav('navQuestion');
+            const c = document.getElementById('contentArea');
+            if (!appState.user) { c.innerHTML = `<div class="card"><h3>Please sign in to take the questionnaire</h3></div>`; return; }
+
+            const local = getLocalSubmissions();
+            const mine = local.find(s => s.userId === appState.user.id);
+            if (mine) {
+                c.innerHTML = `<div class="card"><h3>Your last submission</h3><div style="display:flex;gap:12px;align-items:center"><div class="gauge"><div class="left">${renderSVGGauge(mine.score)}</div><div class="meta"><div style="font-weight:800;font-size:20px">Score: ${mine.score} / ${MAX_SCORE}</div><div style="color:var(--muted);margin-top:6px">Zone: <span class="badge ${zoneClass(mine.zone)}">${mine.zone.toUpperCase()}</span></div><div style="height:6px"></div><div style="color:var(--muted)">Answered on: ${new Date(mine.submittedAt).toLocaleString()}</div></div></div></div><div style="height:12px"></div><div style="display:flex;gap:10px"><button class="btn" onclick="startQuestionnaire()">Retake</button><button class="btn ghost" onclick="viewAnswers('${appState.user.id}')">View Answers</button></div></div>`;
+            } else {
+                c.innerHTML = `<div class="card"><h3>Questionnaire</h3><p class="lead">Quick screening to check symptom level.</p><div style="height:12px"></div><button class="btn" onclick="startQuestionnaire()">Start</button></div>`;
+            }
+        }
+
+        function startQuestionnaire() {
+            const c = document.getElementById('contentArea');
+            let idx = 0; const answers = new Array(QUESTIONS.length).fill(null);
+            renderQuestion();
+
+            function renderQuestion() {
+                const q = QUESTIONS[idx];
+                c.innerHTML = `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Q${q.id} of ${QUESTIONS.length}</h3><small style="color:var(--muted)">Answer honestly</small></div>
+          <div style="height:12px"></div>
+          <div class="question"><div style="font-weight:700">${q.text}</div>
+            <div class="options">${q.options.map((opt, i) => `<div class="option" data-i="${i}" onclick="selectOpt(${i})">${opt}</div>`).join('')}</div>
+          </div>
+          <div class="pager" style="display:flex;justify-content:space-between;margin-top:12px"><div><button class="btn ghost small" onclick="skipQ()">Skip</button></div><div><button class="btn" id="nextBtn">${idx === QUESTIONS.length - 1 ? 'Submit' : 'Next'}</button></div></div>
+      </div>`;
+
+                const opts = document.querySelectorAll('.option');
+                opts.forEach(o => o.classList.remove('selected'));
+                if (answers[idx] !== null) opts[answers[idx]].classList.add('selected');
+
+                window.selectOpt = (i) => { answers[idx] = i; opts.forEach(x => x.classList.remove('selected')); opts[i].classList.add('selected'); };
+                window.skipQ = () => { answers[idx] = 0; goNext(); };
+                document.getElementById('nextBtn').addEventListener('click', () => { if (answers[idx] === null) { if (!confirm('You have not selected an answer. Continue?')) return; else answers[idx] = 0 } goNext(); });
+            }
+
+            function goNext() { if (idx < QUESTIONS.length - 1) { idx++; renderQuestion(); } else finish(); }
+
+            async function finish() {
+                // calculate total using the per-question scores (flipped logic handled in questions)
+                let total = 0; const breakdown = [];
+                for (let i = 0; i < QUESTIONS.length; i++) {
+                    const sel = answers[i] === null ? 0 : answers[i];
+                    const s = QUESTIONS[i].scores[sel];
+                    total += s;
+                    breakdown.push({ q: QUESTIONS[i].id, sel, score: s });
+                }
+
+                // determine zone and suggestion level based on percentage of MAX_SCORE
+                function determineZone(totalScore) {
+                    // totalScore: higher values represent more symptoms/worse state.
+                    // For the UI we want a 'health' percentage where higher is better.
+                    const symptomPct = (MAX_SCORE === 0) ? 0 : (totalScore / MAX_SCORE) * 100;
+                    const healthPct = 100 - symptomPct; // higher => healthier
+                    // healthPct thresholds: >=70 healthy (green), >=40 moderate (yellow), else needs attention (red)
+                    if (healthPct >= 70) return { level: 'good', zone: 'green', label: 'Healthy' };
+                    if (healthPct >= 40) return { level: 'medium', zone: 'yellow', label: 'Moderate' };
+                    return { level: 'low', zone: 'red', label: 'Needs attention' };
+                }
+                const zoneInfo = determineZone(total);
+
+                // prepare record (include suggestion)
+                const suggestionText = (SUGGESTIONS[zoneInfo.level] || []).join(' | ');
+                const rec = { userId: appState.user.id, userName: appState.user.name, score: total, zone: zoneInfo.zone, level: zoneInfo.level, suggestion: suggestionText, submittedAt: new Date().toISOString(), answers: breakdown };
+
+                // show suggestion card before saving
+                showSuggestionModal(rec, zoneInfo);
+            }
+
+            // showSuggestionModal defined below, it handles saving after user clicks
+        }
+
+        function showSuggestionModal(rec, zoneInfo) {
+            const c = document.getElementById('contentArea');
+            const suggestions = SUGGESTIONS[zoneInfo.level] || [];
+            let html = `<div class="card suggestion-card"><h3>Result</h3><div style="display:flex;gap:12px;align-items:center"><div class="gauge">${renderSVGGauge(rec.score)}</div><div style="flex:1"><div style="font-weight:800;font-size:20px">Score: ${rec.score} / ${MAX_SCORE}</div><div style="color:var(--muted);margin-top:6px">Zone: <span class="badge ${zoneClass(rec.zone)}">${zoneInfo.label}</span></div><div style="height:8px"></div><div><strong>Suggestions</strong></div></div></div><div style="height:12px"></div><ul>`;
+            suggestions.forEach(s => { html += `<li>${s}</li>`; });
+            html += `</ul><div style="height:12px"></div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn ghost" onclick="renderQuestionEntry()">Cancel</button><button class="btn" onclick='saveSubmission(${JSON.stringify(rec).replace(/'/g, "\\'")})'>Save & Continue</button></div></div>`;
+            c.innerHTML = html;
+        }
+
+        async function saveSubmission(rec) {
+            // try server save if token available, otherwise save local
+            const token = getToken();
+            if (token) {
+                try {
+                    const res = await fetch(API_BASE + '/api/submissions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                        body: JSON.stringify({ userId: rec.userId, score: rec.score, zone: rec.zone, suggestion: rec.suggestion, answers: rec.answers })
+                    });
+                    if (!res.ok) {
+                        console.warn('Server rejected save', res.status);
+                        saveLocalSubmission(rec);
+                        alert('Saved locally (server rejected request).');
+                        renderQuestionEntry();
+                        return;
+                    }
+                    // success
+                    saveLocalSubmission(rec);
+                    alert('Saved to server and local.');
+                    renderQuestionEntry();
+                    return;
+                } catch (e) {
+                    console.warn('Server unreachable - saving locally', e);
+                    saveLocalSubmission(rec);
+                    alert('Saved locally (server unreachable).');
+                    renderQuestionEntry();
+                    return;
+                }
+            } else {
+                saveLocalSubmission(rec);
+                alert('Saved locally. Sign in to push to server.');
+                renderQuestionEntry();
+            }
+        }
+
+        function viewAnswers(uid) {
+            const all = getLocalSubmissions(); const mine = all.find(s => s.userId === uid); if (!mine) return alert('No answers found');
+            const c = document.getElementById('contentArea');
+            c.innerHTML = `<div class="card"><h3>Answer details</h3><div style="color:var(--muted)">Submitted: ${new Date(mine.submittedAt).toLocaleString()}</div><div style="height:12px"></div><div style="font-weight:700">Score: ${mine.score} / ${MAX_SCORE} — <span class="badge ${zoneClass(mine.zone)}">${mine.zone}</span></div><div style="height:12px"></div>${mine.answers.map(a => `<div style="margin-bottom:8px"><strong>Q${a.q}</strong>: Answer index ${a.sel} (score ${a.score})</div>`).join('')}<div style="height:12px"></div><div style="color:var(--muted)"><strong>Suggestion:</strong> ${mine.suggestion || 'No suggestion recorded'}</div></div>`;
+        }
+
+        function renderResources() {
+            setActiveNav('navResources');
+            const c = document.getElementById('contentArea');
+            c.innerHTML = `<div class="card"><h3>Resources</h3><div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:12px">
+        <div class="resource" style="width:340px"><strong>Calm breathing</strong><div style="height:8px"></div><iframe width="100%" height="180" src="https://www.youtube.com/embed/YyjBKqsJqAo" frameborder="0" allowfullscreen></iframe></div>
+        <div class="resource" style="width:340px"><strong>Guided meditation</strong><div style="height:8px"></div><iframe width="100%" height="180" src="https://www.youtube.com/embed/qUz93CyNIz0" frameborder="0" allowfullscreen></iframe></div>
+        <div class="resource" style="width:340px"><strong>Stress relief</strong><div style="height:8px"></div><iframe width="100%" height="180" src="https://www.youtube.com/embed/bV_NdUZEmnE" frameborder="0" allowfullscreen></iframe></div>
+      </div></div>`;
+        }
+
+        // Admin portal
+        function renderAdmin() {
+            setActiveNav('navAdmin');
+            if (!appState.user || appState.user.role !== 'admin') { document.getElementById('contentArea').innerHTML = `<div class="card">Admin — sign in as an admin to access submissions</div>`; return; }
+            const c = document.getElementById('contentArea');
+            const all = getLocalSubmissions();
+            let rows = all.map(r => `<tr><td>${r.userName}</td><td>${new Date(r.submittedAt).toLocaleString()}</td><td>${r.score}</td><td><span class="badge ${zoneClass(r.zone)}">${r.zone}</span></td><td>${(r.suggestion) ? '<button class="btn ghost small" onclick="viewUser(\''+r.userId+'\')">View</button>' : ''}</td></tr>`).join('');
+            if (!rows) rows = `<tr><td colspan="5" style="color:var(--muted)">No submissions yet</td></tr>`;
+            c.innerHTML = `<div class="card"><h3>Admin — Submissions</h3><div style="height:12px"></div><table><thead><tr><th>Name</th><th>Submitted</th><th>Score</th><th>Zone</th><th>Action</th></tr></thead><tbody>${rows}</tbody></table><div style="height:12px"></div><div><button class="btn" onclick="fetchServerSubmissions()">Refresh from server</button></div></div>`;
+        }
+
+        window.viewUser = function (uid) {
+            const all = getLocalSubmissions(); const r = all.find(x => x.userId === uid); if (!r) return alert('Not found');
+            const c = document.getElementById('contentArea');
+            c.innerHTML = `<div class="card"><h3>${r.userName}</h3><div style="color:var(--muted)">Submitted: ${new Date(r.submittedAt).toLocaleString()}</div><div style="height:12px"></div><div style="font-weight:700">Score: ${r.score} / ${MAX_SCORE} — <span class="badge ${zoneClass(r.zone)}">${r.zone}</span></div><div style="height:12px"></div><div>${r.answers.map(a => `<div style="margin-bottom:6px"><strong>Q${a.q}</strong> — answer index: ${a.sel} (score ${a.score})</div>`).join('')}</div><div style="height:12px"></div><div style="color:var(--muted)"><strong>Suggestion:</strong><div style="margin-top:6px">${r.suggestion || 'No suggestion recorded'}</div></div><div style="height:12px"></div><div><button class="btn ghost" onclick="renderAdmin()">Back</button></div></div>`;
+        }
+
+        async function fetchServerSubmissions() {
+            const token = getToken();
+            if (!token) return alert('Sign in with admin account to fetch server data');
+            try {
+                const res = await fetch(API_BASE + '/api/submissions', { headers: { 'Authorization': 'Bearer ' + token } });
+                if (!res.ok) return alert('Server error: ' + res.status);
+                const rows = await res.json();
+                const mirror = rows.map(r => ({ userId: r.user_id, userName: r.user_name, score: r.score, zone: r.zone, suggestion: r.suggestion || '', submittedAt: r.submitted_at, answers: r.answers }));
+                localStorage.setItem('mh_admin_fetch', JSON.stringify(mirror));
+                const c = document.getElementById('contentArea');
+                let table = `<div class="card"><h3>Server submissions</h3><table><thead><tr><th>User</th><th>Submitted</th><th>Score</th><th>Zone</th><th>Suggestion</th></tr></thead><tbody>`;
+                table += rows.map(r => `<tr><td>${r.user_name}</td><td>${r.submitted_at}</td><td>${r.score}</td><td>${r.zone}</td><td>${(r.suggestion)? r.suggestion : ''}</td></tr>`).join('');
+                table += `</tbody></table><div style="height:12px"></div><div><button class="btn" onclick="renderAdmin()">Back</button></div></div>`;
+                c.innerHTML = table;
+            } catch (e) {
+                console.warn('Fetch failed', e);
+                alert('Failed to fetch server submissions.');
+            }
+        }
+
+        // init
+        renderAll();
+    </script>
+</body>
+
+</html>

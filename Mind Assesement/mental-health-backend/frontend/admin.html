@@ -1,0 +1,195 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root {
+      --bg: #000000;
+      --panel: #0f0f10;
+      --muted: #9aa0a6;
+      --accent: #9ca3a8;
+      --accent2: #6f7478;
+      --white: #e6eef8;
+      --radius: 6px;
+    }
+
+    body {
+      font-family: Inter, system-ui, Segoe UI, Arial;
+      background: linear-gradient(180deg, #000, #060606);
+      color: var(--white);
+      padding: 20px;
+      margin: 0
+    }
+
+    .box {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.005));
+      padding: 18px;
+      border-radius: 6px;
+      max-width: 1000px;
+      margin: 0 auto;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.02)
+    }
+
+    h2 {
+      margin: 0 0 8px 0
+    }
+
+    input,
+    button {
+      padding: 8px;
+      margin: 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      background: var(--panel);
+      color: var(--white)
+    }
+
+    button {
+      cursor: pointer
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px
+    }
+
+    th,
+    td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02)
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .btn {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      color: #060606;
+      font-weight: 700;
+      cursor: pointer
+    }
+
+    .btn.ghost {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      color: var(--white)
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <h2>Admin Dashboard</h2>
+
+    <div id="login">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="username" placeholder="username" value="admin" />
+        <input id="password" placeholder="password" type="password" value="admin123" />
+        <button id="btnLogin" class="btn">Sign in</button>
+      </div>
+      <div id="loginMsg" style="color:var(--muted);margin-top:8px"></div>
+    </div>
+
+    <div id="controls" style="display:none;margin-top:12px">
+      <div class="controls">
+        <button id="btnRefresh" class="btn ghost">Refresh submissions</button>
+        <button id="btnDownloadDB" class="btn ghost">Download DB</button>
+        <a id="linkExport" href="#" class="btn ghost"
+          style="display:inline-block;text-decoration:none;color:var(--white);line-height:28px">Export CSV</a>
+      </div>
+    </div>
+
+    <div id="results" style="margin-top:12px"></div>
+  </div>
+
+  <script>
+    let token = null;
+
+    async function login() {
+      const u = document.getElementById('username').value;
+      const p = document.getElementById('password').value;
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p })
+        });
+        const j = await res.json();
+        if (!res.ok) { document.getElementById('loginMsg').innerText = j.error || JSON.stringify(j); return; }
+        if (j.success && j.token) {
+          token = j.token;
+          document.getElementById('login').style.display = 'none';
+          document.getElementById('controls').style.display = '';
+          fetchSubmissions();
+        } else {
+          document.getElementById('loginMsg').innerText = 'Unexpected response';
+        }
+      } catch (e) {
+        console.warn('Login failed', e);
+        document.getElementById('loginMsg').innerText = 'Server unreachable. Check backend.';
+      }
+    }
+
+    async function fetchSubmissions() {
+      if (!token) return alert('Sign in first');
+      try {
+        const res = await fetch('/api/submissions', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (res.status !== 200) { document.getElementById('results').innerText = 'Error: ' + res.status; return; }
+        const rows = await res.json();
+        renderTable(rows);
+      } catch (e) {
+        console.warn('Fetch failed', e);
+        document.getElementById('results').innerText = 'Failed to fetch submissions.';
+      }
+    }
+
+    function renderTable(rows) {
+      if (!rows || !rows.length) { document.getElementById('results').innerText = 'No submissions'; return; }
+      let html = '<table><thead><tr><th>ID</th><th>User</th><th>Score</th><th>Zone</th><th>Submitted At</th></tr></thead><tbody>';
+      rows.forEach(r => {
+        html += `<tr><td>${r.id}</td><td>${r.user_name} (${r.username})</td><td>${r.score}</td><td>${r.zone}</td><td>${r.submitted_at}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      document.getElementById('results').innerHTML = html;
+    }
+
+    document.getElementById('btnLogin').addEventListener('click', login);
+    document.getElementById('btnRefresh').addEventListener('click', fetchSubmissions);
+
+    document.getElementById('btnDownloadDB').addEventListener('click', async () => {
+      if (!token) return alert('sign in first');
+      try {
+        const res = await fetch('/api/db/download', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) return alert('Failed to download DB: ' + res.status);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'db.sqlite'; document.body.appendChild(a); a.click(); a.remove();
+      } catch (e) { alert('Download failed'); console.warn(e); }
+    });
+
+    document.getElementById('linkExport').addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (!token) return alert('sign in first');
+      try {
+        const res = await fetch('/api/export/submissions.csv', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) return alert('Export failed: ' + res.status);
+        const text = await res.text();
+        const blob = new Blob([text], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'submissions.csv'; document.body.appendChild(a); a.click(); a.remove();
+      } catch (e) { alert('Export failed'); console.warn(e); }
+    });
+  </script>
+</body>
+
+</html>
